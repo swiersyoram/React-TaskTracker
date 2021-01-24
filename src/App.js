@@ -5,56 +5,63 @@ import Tasks from './components/Tasks';
 import Addtask from './components/Addtask'
 import  React, { Component }  from "react";
 function App() {
-  
-  const [tasks, setTasks] = useState(
-    [
-        {
-            id:1,
-            text:"Docters appointment",
-            day:"June 3th at 5:00pm",
-            reminder:true,
-        }, 
-        {
-            id:2,
-            text:"Meeting school",
-            day:"September 15th at 2:00pm",
-            reminder: true,
-        },
-         {
-            id:3,
-            text:"Carwash reservation",
-            day:"July 24th at 3:00pm",
-            reminder: false,
-        },
-    
-    
-    ] 
-)
-const [form,setForm] = useState({
+ 
+  const [tasks, setTasks] = useState([])
+  const [form,setForm] = useState({
   showForm: false
 })
 
 //add task 
-const addTask =  (input)=>{
+const addTask = async (input)=>{
+  
   const id = tasks.length===0?0:tasks[tasks.length-1].id+1;
+  await fetch(`http://localhost:5000/tasks`,{
+  method:"POST",
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({id,...input})
+  
+})
+.then(response => response.json())
+.then(data => console.log(data))
   setTasks([...tasks,{id,...input}])
 }
-useEffect(()=>{
-  console.log(tasks)
-})
+
+useEffect(() => {
+  fetch("http://localhost:5000/tasks")
+    .then(res =>res.json())
+    .then(
+      (res) => {
+        console.log(res)
+        setTasks(res);
+      },
+     
+      (error) => {
+        console.log(error)
+      }
+    )
+}, [])
  
 
 //delete task
-const deleteTask=(id)=>{
+const deleteTask= async (id)=>{
+await fetch(`http://localhost:5000/tasks/${id}`,{
+  method:"DELETE"
+})
   setTasks(tasks.filter((task)=>task.id !== id))
-  
 }
 
 //toggle reminder
-const toggleReminder=(id)=>{
+const toggleReminder= async (id)=>{
   setTasks(tasks.map((task)=>task.id===id?
   {...task, reminder:!task.reminder}:task))
- 
+
+  await fetch(`http://localhost:5000/tasks/${id}`,{
+    method:"PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({reminder: !tasks.filter((task)=>task.id === id)[0].reminder })
+   })
+   .then(response => response.json())
+  .then(data => console.log(data))
 }
 
 
@@ -65,8 +72,6 @@ const toggleReminder=(id)=>{
       :"There are no tasks..."
       }
       { form.showForm?<Addtask onAdd ={addTask}/>:''}
-      
-
     </div>
   );
 }
