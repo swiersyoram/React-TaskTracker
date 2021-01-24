@@ -3,14 +3,8 @@
     {
       "id": 1,
       "text": "Task 1",
-      "day": "monday",
-      "reminder": true
-    },
-    {
-      "id": 2,
-      "text": "Task2",
-      "day": "wednesday",
-      "reminder": true
+      "day": "someday",
+      "reminder": false
     }
   ]
 }

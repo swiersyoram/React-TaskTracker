@@ -12,14 +12,13 @@ function App() {
 })
 
 //add task 
-const addTask = async (input)=>{
+const addTask =  (input)=>{
   
   const id = tasks.length===0?0:tasks[tasks.length-1].id+1;
-  await fetch(`http://localhost:5000/tasks`,{
+   fetch(`http://localhost:5000/tasks`,{
   method:"POST",
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({id,...input})
-  
 })
 .then(response => response.json())
 .then(data => console.log(data))
@@ -43,25 +42,26 @@ useEffect(() => {
  
 
 //delete task
-const deleteTask= async (id)=>{
-await fetch(`http://localhost:5000/tasks/${id}`,{
+const deleteTask=  (id)=>{
+ fetch(`http://localhost:5000/tasks/${id}`,{
   method:"DELETE"
 })
   setTasks(tasks.filter((task)=>task.id !== id))
 }
 
 //toggle reminder
-const toggleReminder= async (id)=>{
+const toggleReminder=  (id)=>{
   setTasks(tasks.map((task)=>task.id===id?
   {...task, reminder:!task.reminder}:task))
 
-  await fetch(`http://localhost:5000/tasks/${id}`,{
+   fetch(`http://localhost:5000/tasks/${id}`,{
     method:"PATCH",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({reminder: !tasks.filter((task)=>task.id === id)[0].reminder })
    })
-   .then(response => response.json())
-  .then(data => console.log(data))
+  .then(res =>res.json())
+  .then(data=>console.log(data))
+  
 }
 
 
